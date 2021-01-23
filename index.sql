@@ -148,8 +148,106 @@ GROUP BY ar.name;
 -- Use Distinct
 
 -- Problem 1
-
+SELECT DISTINCT composer
+FROM track;
 
 -- Problem 2
+SELECT DISTINCT billing_postal_code
+FROM invoice;
 
 -- Problem 3
+SELECT DISTINCT company
+FROM customer;
+
+---------------------------
+
+
+-- Delete Rows
+
+-- Problem 1
+DELETE FROM practice_delete
+WHERE type = 'bronze';
+
+-- Problem 2
+DELETE FROM practice_delete
+WHERE type = 'silver';
+
+-- Problem 3
+DELETE FROM practice_delete
+WHERE value = 150;
+
+---------------------------
+
+
+-- eCommerce Simulation
+
+-- Tables
+CREATE TABLE users (
+	user_id SERIAL PRIMARY KEY,
+  name VARCHAR(100),
+  email VARCHAR(150)
+);
+
+CREATE TABLE products (
+	product_id SERIAL PRIMARY KEY,
+  name VARCHAR(100),
+  price INT
+);
+
+CREATE TABLE orders (
+	order_id SERIAL PRIMARY KEY,
+  product_id INT REFERENCES products(product_id)
+);
+
+-- Adding Data
+INSERT INTO users
+(name, email)
+VALUES
+('Kaladin', 'kal@roshar.com'),
+('Shallan', 'sketchy@roshar.com'),
+('Adolin', 'daddysfavorite@roshar.com');
+
+INSERT INTO products
+(name, price)
+VALUES
+('Shardblade', 100000000),
+('Sketchbook', 30),
+('Wine', 500);
+
+INSERT INTO orders
+(product_id)
+VALUES
+(1),
+(2),
+(3);
+
+-- Get all products for first order
+SELECT * 
+FROM products p
+JOIN orders o ON p.product_id = o.product_id
+WHERE o.order_id = 1;
+
+-- Get all orders
+SELECT * FROM orders;
+
+-- Total cost of an order
+SELECT SUM(p.price)
+FROM products p
+JOIN orders o ON p.product_id = o.product_id
+WHERE o.order_id = 2;
+
+-- Add foreign key to users connecting orders
+ALTER TABLE users
+ADD COLUMN order_id INT REFERENCES orders(order_id);
+
+-- Get all orders for a user
+SELECT *
+FROM orders o
+JOIN users u ON o.order_id = u.order_id
+WHERE u.order_id = 1;
+
+-- Get how many orders user has
+SELECT COUNT(u.order_id)
+FROM orders o
+JOIN users u ON o.order_id = u.order_id
+WHERE u.name = 'Kaladin';
